@@ -12,7 +12,7 @@ To install the package run one of the following commands in the Julia REPL.
 
 ```julia
 using Pkg
-Pkg.add(url="https://git.rwth-aachen.de/nick1/XIMC-jl.git")
+Pkg.add(url="https://github.com/bergermann/XIMC")
 ```
 
 
@@ -45,9 +45,6 @@ commandWaitForStop(D)
 closeDevices(D)
 ```
 
-## Documenation
-
-The full documentation can be found [here](https://ximc-jl-nick1-7d57c72cdff051bfc51526e4f437e4b729e4ce3f351731c3f.pages.rwth-aachen.de/).
 
 ## Contact
 - [Dominik Bergermann](mailto:dominik.bergermann@rwth-aachen.de)
