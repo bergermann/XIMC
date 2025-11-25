@@ -1,0 +1,9 @@
+name = "XIMC"
+uuid = "339a470b-4307-4bef-b74b-dc9f803f4528"
+authors = ["Nick Michaelis <nick.michaelis@rwth-aachen.de>"]
+version = "0.2.0"
+
+[deps]
+CEnum = "fa961155-64e5-5f13-b03f-caf6b980ea82"
+Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
+StringViews = "354b36f9-a18e-4713-926e-db85100087ba"

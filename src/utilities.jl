@@ -1,0 +1,94 @@
+# some random stuff
+
+export x2steps, steps2x, Units
+
+import Base: *, /
+
+function *(i,u::Symbol)
+    if haskey(Units,u)
+        return i*Units[u]
+    else
+        error("Unit not supported.")
+    end
+end
+
+function /(i,u::Symbol)
+    if haskey(Units,u)
+        return i/Units[u]
+    else
+        error("Unit not supported.")
+    end
+end
+
+function setBindyKey(keyfilepath::String)
+    set_bindy_key(Vector{UInt8}(keyfilepath))
+end
+
+function Base.String(str::NTuple)
+    arr = collect(UInt8,str)
+
+    return String(filter(x->x!=0,arr))
+end
+
+Units = Dict{Symbol,Float64}(
+    :m  => 1.0,
+    :cm => 1e-2,
+    :mm => 1e-3,
+    :µm => 1e-6,
+    :nm => 1e-9,
+    :s  => 1.0,
+    :ms => 1e-3,
+    :µs => 1e-6,
+)
+
+function x2steps(
+        x::Real;        # input (in unit inputunit, duh)
+        inputunit::Symbol=:mm,
+        cal::Tuple{Symbol,Real}=(:mm,40),   # how many steps equal 1 inputunit
+        microstepmode::MicrostepMode=MICROSTEP_MODE_FRAC_256,
+    )
+
+    s = x*inputunit*cal[2]/cal[1]
+    µs = trunc(Int,2^(Int(microstepmode)-1)*(s%1))
+
+    if 0 <= µs < 2^(microstepmode-1)
+        return (floor(Int,s),µs)
+    else
+        return (floor(Int,s)+µs//(2^(microstepmode-1)),µs%(2^(microstepmode-1)))
+    end
+end
+
+const x2s = x2steps
+
+function steps2x(
+        pos::Tuple{Integer,Integer};
+        outputunit::Symbol=:m,
+        cal::Tuple{Symbol,Real}=(:mm,40),
+        microstepmode::MicrostepMode=MICROSTEP_MODE_FRAC_256
+    )
+
+    return (pos[1]+pos[2]/(2^(microstepmode-1)))*cal[1]/cal[2]/outputunit
+end
+
+function steps2x(
+        pos::Integer,
+        upos::Integer;
+        outputunit::Symbol=:m,
+        cal::Tuple{Symbol,Real}=(:mm,40),
+        microstepmode::MicrostepMode=MICROSTEP_MODE_FRAC_256
+    )
+
+    return (pos+upos/(2^(microstepmode-1)))*cal[1]/cal[2]/outputunit
+end
+
+const s2x = steps2x
+
+function groupDelay(ref::Vector{ComplexF64},freqs::Vector{Float64})
+    if length(ref) != length(freqs)
+        return error("Array lengths don't match up.")
+    end
+
+    r_ = abs2.(ref)
+
+    return (r_[2:end]-r_[1:end-1])./(freqs[2:end]-freqs[1:end-1])
+end
